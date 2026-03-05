@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ganaConLosSantos</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+margin:0;
+padding:0;
+}
+
+header{
+background:#020617;
+padding:20px;
+font-size:28px;
+font-weight:bold;
+}
+
+.container{
+padding:30px;
+}
+
+.precio{
+font-size:22px;
+margin-bottom:20px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(10,1fr);
+gap:6px;
+max-width:800px;
+margin:auto;
+}
+
+.numero{
+background:#1e293b;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.numero:hover{
+background:#22c55e;
+}
+
+button{
+margin-top:20px;
+padding:15px 30px;
+font-size:18px;
+background:#22c55e;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#16a34a;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+ganaConLosSantos
+</header>
+
+<div class="container">
+
+<h2>Compra tu número de la rifa</h2>
+
+<div class="precio">
+Valor por número: $600 COP
+<br>
+Compra mínima: 4 números
+</div>
+
+<div class="grid" id="numeros"></div>
+
+<button onclick="comprar()">Comprar números</button>
+
+</div>
+
+<script>
+
+let seleccionados=[]
+
+for(let i=10000;i<=10099;i++){
+
+let div=document.createElement("div")
+div.className="numero"
+div.innerText=i
+
+div.onclick=function(){
+
+if(seleccionados.includes(i)){
+seleccionados=seleccionados.filter(n=>n!=i)
+div.style.background="#1e293b"
+}
+else{
+seleccionados.push(i)
+div.style.background="#22c55e"
+}
+
+}
+
+document.getElementById("numeros").appendChild(div)
+
+}
+
+function comprar(){
+
+if(seleccionados.length<4){
+alert("Debes comprar mínimo 4 números")
+return
+}
+
+alert("Seleccionaste: "+seleccionados.join(", "))
+
+}
+
+</script>
+
+</body>
+</html>
