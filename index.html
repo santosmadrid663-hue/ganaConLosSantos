@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ganaConLosSantos - Rifa</title>
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; }
-  #numeros-container { display: flex; flex-wrap: wrap; gap: 5px; max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
-  .numero { width: 70px; height: 40px; cursor: pointer; }
-  .numero.seleccionado { background-color: lightgreen; }
-  #busqueda { margin-bottom: 10px; }
+body { font-family: Arial, sans-serif; padding: 20px; }
+#numeros-container { display: flex; flex-wrap: wrap; gap: 5px; max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom:10px; }
+.numero { width: 60px; height: 40px; cursor: pointer; border:1px solid #aaa; border-radius:5px; }
+.numero.seleccionado { background-color: lightgreen; }
+.numero.vendido { background-color: lightgray; cursor: not-allowed; }
+#paginacion { margin-bottom: 10px; }
+#busqueda { margin-bottom: 10px; }
+button { padding:5px 10px; }
 </style>
 </head>
 <body>
@@ -21,94 +24,141 @@
 
 <div id="numeros-container"></div>
 
+<div id="paginacion">
+  <button onclick="cambiarPagina(-1)">Anterior</button>
+  <span id="paginaActual">1</span> / <span id="totalPaginas">1</span>
+  <button onclick="cambiarPagina(1)">Siguiente</button>
+</div>
+
 <div style="margin-top:10px;">
   <b>Total a pagar:</b> $<span id="total">0</span>
 </div>
 
+<button onclick="seleccionAutomatica()">Seleccionar automáticamente</button>
+<button onclick="validarCompra()">Comprar</button>
+
 <script>
 const precioPorNumero = 600;
+const numerosPorPagina = 200;
+let paginaActual = 1;
 let numerosSeleccionados = [];
 
 // Generar todos los números de 5 dígitos
 let numerosDisponibles = [];
-for (let i = 10000; i <= 99999; i++) {
-    numerosDisponibles.push(i);
+for(let i=10000;i<=99999;i++){
+    numerosDisponibles.push({numero:i,vendido:false});
 }
 
 const contenedor = document.getElementById("numeros-container");
 
-// Función para crear botones visibles (bloque de 200 números por rendimiento)
-function mostrarNumeros(inicio = 0, cantidad = 200) {
-    contenedor.innerHTML = ""; // limpiar
-    for (let i = inicio; i < inicio + cantidad && i < numerosDisponibles.length; i++) {
+// Mostrar números según la página
+function mostrarPagina(pagina){
+    contenedor.innerHTML = "";
+    const inicio = (pagina-1)*numerosPorPagina;
+    const fin = Math.min(inicio+numerosPorPagina,numerosDisponibles.length);
+
+    for(let i=inicio;i<fin;i++){
+        const numObj = numerosDisponibles[i];
         let boton = document.createElement("button");
-        boton.textContent = numerosDisponibles[i];
+        boton.textContent = numObj.numero;
         boton.classList.add("numero");
-        if (numerosSeleccionados.includes(numerosDisponibles[i])) {
-            boton.classList.add("seleccionado");
-        }
-        boton.onclick = () => toggleNumero(numerosDisponibles[i], boton);
+        if(numObj.vendido) boton.classList.add("vendido");
+        if(numerosSeleccionados.includes(numObj.numero)) boton.classList.add("seleccionado");
+        boton.onclick = () => toggleNumero(numObj, boton);
         contenedor.appendChild(boton);
     }
+
+    document.getElementById("paginaActual").textContent = pagina;
+    const totalPag = Math.ceil(numerosDisponibles.length/numerosPorPagina);
+    document.getElementById("totalPaginas").textContent = totalPag;
 }
 
-// Inicialmente mostramos los primeros 200 números
-mostrarNumeros(0, 200);
-
-// Función para seleccionar/deseleccionar número
-function toggleNumero(numero, boton) {
-    const index = numerosSeleccionados.indexOf(numero);
-    if (index > -1) {
-        numerosSeleccionados.splice(index, 1);
+// Seleccionar/deseleccionar número
+function toggleNumero(numObj, boton){
+    if(numObj.vendido) return;
+    const index = numerosSeleccionados.indexOf(numObj.numero);
+    if(index>-1){
+        numerosSeleccionados.splice(index,1);
         boton.classList.remove("seleccionado");
-    } else {
-        numerosSeleccionados.push(numero);
+    }else{
+        numerosSeleccionados.push(numObj.numero);
         boton.classList.add("seleccionado");
     }
     actualizarTotal();
 }
 
-// Actualizar el total
-function actualizarTotal() {
+// Actualizar total
+function actualizarTotal(){
     const total = numerosSeleccionados.length * precioPorNumero;
     document.getElementById("total").textContent = total;
 }
 
+// Cambiar página
+function cambiarPagina(d){
+    const totalPag = Math.ceil(numerosDisponibles.length/numerosPorPagina);
+    paginaActual += d;
+    if(paginaActual<1) paginaActual=1;
+    if(paginaActual>totalPag) paginaActual=totalPag;
+    mostrarPagina(paginaActual);
+}
+
 // Buscar número específico
-function buscarNumero() {
+function buscarNumero(){
     const valor = parseInt(document.getElementById("busqueda").value);
-    if (isNaN(valor) || valor < 10000 || valor > 99999) {
+    if(isNaN(valor) || valor<10000 || valor>99999){
         alert("Ingresa un número válido entre 10000 y 99999");
         return;
     }
     contenedor.innerHTML = "";
-    let boton = document.createElement("button");
-    boton.textContent = valor;
-    boton.classList.add("numero");
-    if (numerosSeleccionados.includes(valor)) {
-        boton.classList.add("seleccionado");
+    const numObj = numerosDisponibles.find(n=>n.numero===valor);
+    if(!numObj){
+        alert("Número no encontrado");
+        return;
     }
-    boton.onclick = () => toggleNumero(valor, boton);
+    let boton = document.createElement("button");
+    boton.textContent = numObj.numero;
+    boton.classList.add("numero");
+    if(numObj.vendido) boton.classList.add("vendido");
+    if(numerosSeleccionados.includes(numObj.numero)) boton.classList.add("seleccionado");
+    boton.onclick = () => toggleNumero(numObj, boton);
     contenedor.appendChild(boton);
 }
 
-// Validación antes de enviar
-function validarCompra() {
-    if (numerosSeleccionados.length < 4) {
-        alert("Debes seleccionar al menos 4 números para comprar.");
-        return false;
+// Selección automática de números (mínimo 4)
+function seleccionAutomatica(){
+    let disponibles = numerosDisponibles.filter(n=>!n.vendido && !numerosSeleccionados.includes(n.numero));
+    if(disponibles.length<4){
+        alert("No hay suficientes números disponibles");
+        return;
     }
-    alert("Compra realizada. Total a pagar: $" + (numerosSeleccionados.length * precioPorNumero));
-    // Aquí puedes agregar la lógica para enviar los números al servidor
-    return true;
+    while(numerosSeleccionados.length<4){
+        const aleatorio = disponibles[Math.floor(Math.random()*disponibles.length)];
+        numerosSeleccionados.push(aleatorio.numero);
+        disponibles = disponibles.filter(n=>n.numero!==aleatorio.numero);
+    }
+    mostrarPagina(paginaActual);
+    actualizarTotal();
 }
 
-// Ejemplo: botón de compra
-const btnComprar = document.createElement("button");
-btnComprar.textContent = "Comprar";
-btnComprar.style.marginTop = "10px";
-btnComprar.onclick = validarCompra;
-document.body.appendChild(btnComprar);
+// Validar compra
+function validarCompra(){
+    if(numerosSeleccionados.length<4){
+        alert("Debes seleccionar al menos 4 números");
+        return;
+    }
+    alert("Compra realizada. Total a pagar: $"+(numerosSeleccionados.length*precioPorNumero));
+    // Marcar números como vendidos
+    numerosSeleccionados.forEach(n=>{
+        const obj = numerosDisponibles.find(x=>x.numero===n);
+        if(obj) obj.vendido = true;
+    });
+    numerosSeleccionados = [];
+    mostrarPagina(paginaActual);
+    actualizarTotal();
+}
+
+// Inicializar
+mostrarPagina(paginaActual);
 </script>
 
 </body>
