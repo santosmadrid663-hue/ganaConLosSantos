@@ -5,104 +5,82 @@
 <title>ganaConLosSantos</title>
 
 <style>
-
 body{
 font-family: Arial;
-background:#0f172a;
-color:white;
 text-align:center;
-margin:0;
+background:#f4f4f4;
 }
 
-header{
-background:#020617;
-padding:20px;
-font-size:30px;
-font-weight:bold;
-}
-
-.container{
-padding:30px;
+h1{
+background:#111;
+color:white;
+padding:15px;
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(10,1fr);
-gap:6px;
-max-width:900px;
+gap:5px;
+max-width:600px;
 margin:auto;
 }
 
 .numero{
-background:#1e293b;
 padding:10px;
-border-radius:6px;
+background:white;
+border:1px solid #ccc;
 cursor:pointer;
 }
 
 .numero:hover{
-background:#22c55e;
+background:#d4f5d4;
 }
 
 .seleccionado{
-background:#16a34a;
+background:#4CAF50;
+color:white;
 }
 
-button{
+.panel{
 margin-top:20px;
-padding:15px 30px;
-font-size:18px;
-background:#22c55e;
-border:none;
-border-radius:8px;
-cursor:pointer;
+padding:20px;
+background:white;
+max-width:400px;
+margin-left:auto;
+margin-right:auto;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
-
-button:hover{
-background:#15803d;
-}
-
-.total{
-margin-top:20px;
-font-size:20px;
-}
-
 </style>
-
 </head>
 
 <body>
 
-<header>
-ganaConLosSantos
-</header>
+<h1>ganaConLosSantos</h1>
 
-<div class="container">
-
-<h2>Compra tu número de la rifa</h2>
-
-<p>Valor por número: <b>$600 COP</b></p>
-<p>Compra mínima: <b>4 números</b></p>
+<h2>Valor por número: $600</h2>
+<h3>Mínimo de compra: 4 números</h3>
 
 <div class="grid" id="numeros"></div>
 
-<div class="total">
-Números seleccionados: <span id="cantidad">0</span><br>
-Total a pagar: $<span id="total">0</span>
-</div>
+<div class="panel">
+<p><b>Números seleccionados:</b></p>
+<p id="seleccionados">Ninguno</p>
 
-<button onclick="comprar()">Comprar</button>
-
+<p><b>Total a pagar:</b></p>
+<p id="total">$0</p>
 </div>
 
 <script>
 
-let seleccionados=[]
-let precio=600
+let precio = 600
+let seleccionados = []
+
+let contenedor = document.getElementById("numeros")
 
 for(let i=10000;i<=10099;i++){
 
-let div=document.createElement("div")
+let div = document.createElement("div")
 div.className="numero"
 div.innerText=i
 
@@ -111,29 +89,26 @@ div.onclick=function(){
 if(seleccionados.includes(i)){
 seleccionados=seleccionados.filter(n=>n!=i)
 div.classList.remove("seleccionado")
-}
-else{
+}else{
 seleccionados.push(i)
 div.classList.add("seleccionado")
 }
 
-document.getElementById("cantidad").innerText=seleccionados.length
-document.getElementById("total").innerText=seleccionados.length*precio
+actualizar()
 
 }
 
-document.getElementById("numeros").appendChild(div)
+contenedor.appendChild(div)
 
 }
 
-function comprar(){
+function actualizar(){
 
-if(seleccionados.length<4){
-alert("Debes comprar mínimo 4 números")
-return
-}
+document.getElementById("seleccionados").innerText=seleccionados.join(", ")
 
-alert("Tus números son: "+seleccionados.join(", "))
+let total = seleccionados.length * precio
+
+document.getElementById("total").innerText="$"+total
 
 }
 
