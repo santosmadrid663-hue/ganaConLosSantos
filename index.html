@@ -12,13 +12,12 @@ background:#0f172a;
 color:white;
 text-align:center;
 margin:0;
-padding:0;
 }
 
 header{
 background:#020617;
 padding:20px;
-font-size:28px;
+font-size:30px;
 font-weight:bold;
 }
 
@@ -26,16 +25,11 @@ font-weight:bold;
 padding:30px;
 }
 
-.precio{
-font-size:22px;
-margin-bottom:20px;
-}
-
 .grid{
 display:grid;
 grid-template-columns:repeat(10,1fr);
 gap:6px;
-max-width:800px;
+max-width:900px;
 margin:auto;
 }
 
@@ -50,6 +44,10 @@ cursor:pointer;
 background:#22c55e;
 }
 
+.seleccionado{
+background:#16a34a;
+}
+
 button{
 margin-top:20px;
 padding:15px 30px;
@@ -61,7 +59,12 @@ cursor:pointer;
 }
 
 button:hover{
-background:#16a34a;
+background:#15803d;
+}
+
+.total{
+margin-top:20px;
+font-size:20px;
 }
 
 </style>
@@ -78,21 +81,24 @@ ganaConLosSantos
 
 <h2>Compra tu número de la rifa</h2>
 
-<div class="precio">
-Valor por número: $600 COP
-<br>
-Compra mínima: 4 números
-</div>
+<p>Valor por número: <b>$600 COP</b></p>
+<p>Compra mínima: <b>4 números</b></p>
 
 <div class="grid" id="numeros"></div>
 
-<button onclick="comprar()">Comprar números</button>
+<div class="total">
+Números seleccionados: <span id="cantidad">0</span><br>
+Total a pagar: $<span id="total">0</span>
+</div>
+
+<button onclick="comprar()">Comprar</button>
 
 </div>
 
 <script>
 
 let seleccionados=[]
+let precio=600
 
 for(let i=10000;i<=10099;i++){
 
@@ -104,12 +110,15 @@ div.onclick=function(){
 
 if(seleccionados.includes(i)){
 seleccionados=seleccionados.filter(n=>n!=i)
-div.style.background="#1e293b"
+div.classList.remove("seleccionado")
 }
 else{
 seleccionados.push(i)
-div.style.background="#22c55e"
+div.classList.add("seleccionado")
 }
+
+document.getElementById("cantidad").innerText=seleccionados.length
+document.getElementById("total").innerText=seleccionados.length*precio
 
 }
 
@@ -124,7 +133,7 @@ alert("Debes comprar mínimo 4 números")
 return
 }
 
-alert("Seleccionaste: "+seleccionados.join(", "))
+alert("Tus números son: "+seleccionados.join(", "))
 
 }
 
