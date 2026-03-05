@@ -6,94 +6,89 @@
 
 <style>
 body{
-    font-family: Arial, sans-serif;
-    background:#0f172a;
-    color:white;
-    text-align:center;
+font-family: Arial;
+text-align:center;
+background:#f4f4f4;
 }
 
-.container{
-    background:#1e293b;
-    padding:30px;
-    border-radius:10px;
-    width:350px;
-    margin:auto;
-    margin-top:60px;
+h1{
+color:#0a7cff;
 }
 
-input{
-    padding:10px;
-    width:80%;
-    font-size:16px;
-    margin-top:10px;
+.grid{
+display:grid;
+grid-template-columns:repeat(10,60px);
+gap:10px;
+justify-content:center;
+margin:30px;
 }
 
-button{
-    padding:12px 20px;
-    background:#22c55e;
-    border:none;
-    color:white;
-    font-size:16px;
-    margin-top:20px;
-    cursor:pointer;
+.numero{
+padding:10px;
+background:white;
+border:2px solid #ccc;
+cursor:pointer;
 }
 
-button:hover{
-    background:#16a34a;
+.numero.activo{
+background:#0a7cff;
+color:white;
 }
 
-.total{
-    margin-top:20px;
-    font-size:20px;
+.panel{
+margin-top:30px;
+font-size:20px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎉 ganaConLosSantos</h1>
-<p>Compra tus números y gana $10.000.000</p>
+<h1>Rifa ganaConLosSantos</h1>
+<p>Selecciona mínimo 4 números</p>
 
-<div class="container">
+<div class="grid" id="numeros"></div>
 
-<label>¿Cuántos números deseas comprar?</label><br>
+<div class="panel">
+<p><b>Números seleccionados:</b></p>
+<p id="seleccionados"></p>
 
-<input 
-type="number" 
-id="cantidad" 
-min="4" 
-value="4"
-oninput="calcularTotal()"
->
-
-<div class="total">
-<b>Total a pagar:</b> $<span id="total">2400</span>
-</div>
-
-<button>Comprar números</button>
-
+<p><b>Total a pagar:</b> $<span id="total">0</span></p>
 </div>
 
 <script>
 
-const precioNumero = 600;
+let precio = 600;
+let seleccionados = [];
 
-function calcularTotal(){
+let contenedor = document.getElementById("numeros");
 
-let cantidad = document.getElementById("cantidad").value;
+for(let i=1;i<=50;i++){
 
-if(cantidad < 4){
-cantidad = 4;
-document.getElementById("cantidad").value = 4;
+let btn = document.createElement("div");
+btn.className="numero";
+btn.innerText=i;
+
+btn.onclick=function(){
+
+if(seleccionados.includes(i)){
+seleccionados=seleccionados.filter(n=>n!==i);
+btn.classList.remove("activo");
+}else{
+seleccionados.push(i);
+btn.classList.add("activo");
 }
 
-let total = cantidad * precioNumero;
+document.getElementById("seleccionados").innerText = seleccionados.join(", ");
 
-document.getElementById("total").innerText = total.toLocaleString();
+let total = seleccionados.length * precio;
+document.getElementById("total").innerText = total;
+
+};
+
+contenedor.appendChild(btn);
 
 }
-
-calcularTotal();
 
 </script>
 
