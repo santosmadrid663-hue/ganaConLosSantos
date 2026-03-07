@@ -1,25 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Rifa ganaConLosSantos</title>
 
 <style>
 
 body{
 font-family: Arial;
+background:#f4f6f8;
 text-align:center;
-padding:30px;
-background:#f5f5f5;
+padding:40px;
 }
 
 h1{
 color:#2c3e50;
 }
 
+h2{
+color:#e74c3c;
+}
+
+input{
+padding:10px;
+font-size:16px;
+width:120px;
+text-align:center;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:12px 20px;
+font-size:16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+background:#3498db;
+color:white;
+}
+
+button:hover{
+background:#2980b9;
+}
+
 #contenedorNumeros{
-margin-top:20px;
+margin-top:25px;
 display:flex;
 flex-wrap:wrap;
 justify-content:center;
@@ -34,35 +63,22 @@ border-radius:6px;
 font-weight:bold;
 }
 
-button{
-padding:12px 20px;
-font-size:16px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-background:#3498db;
-color:white;
-}
-
-input{
-padding:10px;
-font-size:16px;
-width:120px;
-text-align:center;
-}
-
 #total{
 margin-top:20px;
 font-size:22px;
 font-weight:bold;
+color:#2c3e50;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <h1>Rifa ganaConLosSantos</h1>
+
+<h2 id="disponibles">Números disponibles: 10000</h2>
 
 <p>Valor por número: <b>$100 COP</b></p>
 <p>Compra mínima: <b>50 números</b></p>
@@ -70,6 +86,8 @@ font-weight:bold;
 <br>
 
 <label>Cantidad de números:</label>
+
+<br><br>
 
 <input type="number" id="cantidad" value="50" min="50">
 
@@ -92,6 +110,9 @@ Enviar pedido por WhatsApp
 <script>
 
 const precioNumero = 100;
+
+let numerosDisponibles = 10000;
+
 const numeroMinimo = 10000;
 const numeroMaximo = 99999;
 
@@ -125,12 +146,15 @@ mostrarNumeros();
 function mostrarNumeros(){
 
 const contenedor = document.getElementById("contenedorNumeros");
+
 contenedor.innerHTML="";
 
 numerosGenerados.forEach(n=>{
 
 let div=document.createElement("div");
+
 div.className="numero";
+
 div.innerText=n;
 
 contenedor.appendChild(div);
@@ -142,13 +166,21 @@ let total = numerosGenerados.length * precioNumero;
 document.getElementById("total").innerText =
 "Total a pagar: $" + total.toLocaleString("es-CO") + " COP";
 
+numerosDisponibles -= numerosGenerados.length;
+
+document.getElementById("disponibles").innerText =
+"Números disponibles: " + numerosDisponibles;
+
 }
 
 function enviarWhatsApp(){
 
 if(numerosGenerados.length === 0){
+
 alert("Primero genera los números");
+
 return;
+
 }
 
 let total = numerosGenerados.length * precioNumero;
@@ -159,7 +191,7 @@ let mensaje =
 "Numeros: "+numerosGenerados.join(", ")+"%0A"+
 "Total: $"+total.toLocaleString("es-CO")+" COP";
 
-let telefono="57TU_NUMERO_AQUI";
+let telefono="573000000000"; 
 
 let url = "https://wa.me/"+telefono+"?text="+mensaje;
 
