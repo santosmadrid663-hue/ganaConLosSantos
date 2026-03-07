@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Rifa ganaConLosSantos</title>
 
 <style>
@@ -67,7 +66,6 @@ font-weight:bold;
 margin-top:20px;
 font-size:22px;
 font-weight:bold;
-color:#2c3e50;
 }
 
 </style>
@@ -78,7 +76,7 @@ color:#2c3e50;
 
 <h1>Rifa ganaConLosSantos</h1>
 
-<h2 id="disponibles">Números disponibles: 90000</h2>
+<h2 id="disponibles"></h2>
 
 <p>Valor por número: <b>$100 COP</b></p>
 <p>Compra mínima: <b>50 números</b></p>
@@ -111,12 +109,15 @@ Enviar pedido por WhatsApp
 
 const precioNumero = 100;
 
-let numerosDisponibles = 90000;
-
 const numeroMinimo = 10000;
 const numeroMaximo = 99999;
 
 let numerosGenerados = [];
+
+/* Cargar números vendidos */
+let numerosVendidos = JSON.parse(localStorage.getItem("numerosVendidos")) || [];
+
+actualizarDisponibles();
 
 function generarNumeros(){
 
@@ -133,7 +134,7 @@ while(numerosGenerados.length < cantidad){
 
 let n = Math.floor(Math.random()*(numeroMaximo-numeroMinimo+1))+numeroMinimo;
 
-if(!numerosGenerados.includes(n)){
+if(!numerosGenerados.includes(n) && !numerosVendidos.includes(n)){
 numerosGenerados.push(n);
 }
 
@@ -166,24 +167,24 @@ let total = numerosGenerados.length * precioNumero;
 document.getElementById("total").innerText =
 "Total a pagar: $" + total.toLocaleString("es-CO") + " COP";
 
-numerosDisponibles -= numerosGenerados.length;
-
-document.getElementById("disponibles").innerText =
-"Números disponibles: " + numerosDisponibles;
-
 }
 
 function enviarWhatsApp(){
 
 if(numerosGenerados.length === 0){
-
 alert("Primero genera los números");
-
 return;
-
 }
 
 let total = numerosGenerados.length * precioNumero;
+
+/* Guardar números vendidos */
+
+numerosVendidos = numerosVendidos.concat(numerosGenerados);
+
+localStorage.setItem("numerosVendidos", JSON.stringify(numerosVendidos));
+
+actualizarDisponibles();
 
 let mensaje =
 "Hola, quiero comprar números de la rifa ganaConLosSantos.%0A%0A"+
@@ -196,6 +197,17 @@ let telefono="573135046932";
 let url = "https://wa.me/"+telefono+"?text="+mensaje;
 
 window.open(url,"_blank");
+
+}
+
+function actualizarDisponibles(){
+
+let totalNumeros = numeroMaximo - numeroMinimo + 1;
+
+let disponibles = totalNumeros - numerosVendidos.length;
+
+document.getElementById("disponibles").innerText =
+"Números disponibles: " + disponibles;
 
 }
 
