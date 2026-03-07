@@ -2,117 +2,97 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rifa - Gana Con Los Santos</title>
+<title>Rifa GanaConLosSantos</title>
 
 <style>
+
 body{
 font-family: Arial;
-padding:20px;
-}
-
-#contenedor{
-display:flex;
-flex-wrap:wrap;
-gap:5px;
-max-height:400px;
-overflow-y:auto;
-border:1px solid #ccc;
-padding:10px;
-}
-
-.numero{
-width:60px;
-height:40px;
-border:1px solid #aaa;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-}
-
-.numero.seleccionado{
-background:#90ee90;
-}
-
-.numero.vendido{
-background:#ccc;
-cursor:not-allowed;
+padding:30px;
+text-align:center;
 }
 
 button{
-margin-top:10px;
-padding:10px;
+padding:15px;
+font-size:16px;
+cursor:pointer;
 }
+
+#numeros{
+margin-top:20px;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:8px;
+}
+
+.numero{
+background:#90ee90;
+padding:10px;
+border-radius:5px;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h2>Selecciona tus números de la rifa</h2>
+<h1>Rifa GanaConLosSantos</h1>
 
-<input type="number" id="busqueda" placeholder="Buscar número 10000-99999">
+<h3>Valor por número: $100 COP</h3>
+<h3>Mínimo de compra: 50 números</h3>
 
-<br><br>
+<br>
 
-<div id="contenedor"></div>
+<button onclick="generarNumeros()">
+Generar números aleatorios
+</button>
 
-<h3 id="cantidad">Seleccionados: 0</h3>
-<h3 id="total">Total: $0 COP</h3>
+<div id="numeros"></div>
 
-<button onclick="comprar()">Comprar números</button>
+<h2 id="total"></h2>
 
 <script>
 
 const precioNumero = 100;
 const minimoCompra = 50;
 
-let seleccionados = [];
+function generarNumeros(){
 
-const contenedor = document.getElementById("contenedor");
+let numeros = [];
 
-for(let i=10000;i<=99999;i++){
+while(numeros.length < minimoCompra){
 
-let div=document.createElement("div");
-div.className="numero";
-div.textContent=i;
+let n = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
 
-div.onclick=()=>{
-if(div.classList.contains("vendido")) return;
-
-if(div.classList.contains("seleccionado")){
-div.classList.remove("seleccionado");
-seleccionados=seleccionados.filter(n=>n!=i);
-}else{
-div.classList.add("seleccionado");
-seleccionados.push(i);
+if(!numeros.includes(n)){
+numeros.push(n);
 }
 
-actualizar();
-};
+}
+
+mostrarNumeros(numeros);
+
+}
+
+function mostrarNumeros(lista){
+
+const contenedor = document.getElementById("numeros");
+contenedor.innerHTML="";
+
+lista.forEach(n => {
+
+let div = document.createElement("div");
+div.className="numero";
+div.innerText = n;
 
 contenedor.appendChild(div);
 
-}
-
-function actualizar(){
-
-document.getElementById("cantidad").innerText =
-"Seleccionados: "+seleccionados.length;
+});
 
 document.getElementById("total").innerText =
-"Total: $"+(seleccionados.length*precioNumero)+" COP";
-
-}
-
-function comprar(){
-
-if(seleccionados.length < minimoCompra){
-alert("Debes comprar mínimo "+minimoCompra+" números");
-return;
-}
-
-alert("Compra realizada por "+(seleccionados.length*precioNumero)+" COP");
+"Total a pagar: $" + (lista.length * precioNumero) + " COP";
 
 }
 
